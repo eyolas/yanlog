@@ -36,7 +36,7 @@ var rootLogger = null;
 /*****************************************
  * initialize
  *****************************************/
-var filesConfig = glob.sync("**/yanlog.*"),
+var filesConfig = glob.sync("**/yanlog.js"),
     configFilePath = null,
     config = defaultConfig;
 
@@ -87,8 +87,8 @@ function load(config) {
         });
     });
 
-    if (config.configuration.ROOT) {
-        rootLogger = buildLogger(config.configuration.ROOT);
+    if (config.configuration.root) {
+        rootLogger = buildLogger(config.configuration.root);
     } else {
         rootLogger = getDefaultRootLogger();
     }
@@ -100,7 +100,7 @@ function buildLogger(loggerConfig) {
     if (appenders && Array.isArray(appenders)) {
         appenders.forEach(function(appender) {
             var options = appender.options;
-            options.level = loggerConfig.level;
+            options.level = loggerConfig.level || "info";
             log.add(appender.module, options);
         });
     }
