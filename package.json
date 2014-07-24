@@ -1,0 +1,25 @@
+{
+  "name": "yanlog",
+  "version": "0.0.0",
+  "description": "yet an another nodejs logger",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eyolas/yanlog.git"
+  },
+  "keywords": [
+    "log",
+    "logguer",
+    "winston"
+  ],
+  "author": "David Touzet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eyolas/yanlog/issues"
+  },
+  "homepage": "https://github.com/eyolas/yanlog",
+  "dependencies": {
+    "glob": "^4.0.4",
+    "winston": "^0.7.3"
+  }
+}
