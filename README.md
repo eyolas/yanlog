@@ -117,11 +117,12 @@ function getDefaultRootLogger() {
         ]
     });
 }
-```
+``
 
 ## roadmap
 - add compatibility with yaml and .properties
 - test of file config for outpout error
+- watch config file for reload
 
 ## Authors
 
