@@ -1,4 +1,6 @@
 yanlog
 ======
 
-yet an another nodejs logger
+Wrapper of winston for easy configuration
+
+

@@ -5,17 +5,17 @@ module.exports = {
             "transports": [{
                 "module": "Console",
                 "options": {
-                    "color": true,
+                    "colorize": true,
                     "timestamp": true
                 }
             }]
         },
         "logger": [{
-            "name": "express",
+            "name": "test",
             "level": "warn",
             "appender-ref": "console"
         }, {
-            "name": "koa",
+            "name": "test.toto.*",
             "level": "warn",
             "appender-ref": "console"
         }, ],
