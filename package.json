@@ -1,6 +1,6 @@
 {
   "name": "yanlog",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "yet an another nodejs logger",
   "main": "index.js",
   "repository": {
