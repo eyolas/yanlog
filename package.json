@@ -1,7 +1,7 @@
 {
   "name": "yanlog",
-  "version": "1.0.0",
-  "description": "yet an another nodejs logger",
+  "version": "1.0.1",
+  "description": "Wrapper of winston for easy configuration",
   "main": "index.js",
   "repository": {
     "type": "git",
