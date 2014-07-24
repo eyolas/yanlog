@@ -117,7 +117,7 @@ function getDefaultRootLogger() {
         ]
     });
 }
-``
+```
 
 ## roadmap
 - add compatibility with yaml and .properties
