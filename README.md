@@ -2,7 +2,7 @@ yanlog
 ======
 
 Wrapper of winston for easy configuration
-Inspired by [debug](https://github.com/visionmedia/debug)
+Inspired by [debug](https://github.com/visionmedia/debug) and [logback](http://logback.qos.ch/)
 
 
 ## Installation
@@ -50,7 +50,7 @@ setInterval(function(){
 }, 1000);
 ```
 
-Example _yoanlog.js_:
+Example _yanlog.js_:
 
 ```js
 module.exports = {
@@ -117,7 +117,7 @@ function getDefaultRootLogger() {
         ]
     });
 }
-``
+```
 
 ## roadmap
 - add compatibility with yaml and .properties
