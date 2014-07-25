@@ -89,10 +89,9 @@ Appender defined all winston logger of your application.
 * `transports`: list of transports (or object) of appender - **Required**
  - `module`: name of module. yanlog tests 
  if module exists in winston.transport else it will be imported. 
- (list of available transport)[https://github.com/flatiron/winston#working-with-transports] - **Required**
+ [list of available transport](https://github.com/flatiron/winston#working-with-transports) - **Required**
  - `options`: options of module - **Optional**
 
-(list of available transport)[https://github.com/flatiron/winston#working-with-transports]
 
 ### logger (array or object)
 Logger defined all active loggers
