@@ -129,7 +129,6 @@ function getDefaultRootLogger() {
 ## roadmap
 - add compatibility with yaml and .properties
 - config file testing in order to generate error logs
-- watch config file for real time reload configuration
 
 ## Change log
 ### 1.0.0 initial version
