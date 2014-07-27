@@ -2,6 +2,7 @@
  * Module dependencies
  */
 var winston = require('winston'),
+    fs = require('fs'),
     glob = require('glob');
 
 exports = module.exports = yanlog;
@@ -27,43 +28,86 @@ var defaultConfig = {
         }
     }
 };
-
 var cache = {};
-var appenderList = {};
 var activeLogger = [];
 var rootLogger = null;
 
 /*****************************************
  * initialize
  *****************************************/
-var configFilePath = null,
-    config = defaultConfig;
+var configInfo = null,
+    isInitialized = false;
 
-configure();
+function initialize() {
+    configInfo = getConfigInfo();
+    configure();
 
-function configure() {
-    getConfig();
-    load(config);
+    // watch file for reload configuration
+    if (configInfo) {
+        setInterval(function() {
+            var stats = fs.statSync(process.cwd() + '/' + configInfo.path);
+            if (configInfo.mtime.getTime() != stats.mtime.getTime()) {
+                console.log("reconfiguration")
+                configInfo.mtime = stats.mtime;
+                configure();
+            }
+        }, 30000);
+    }
+    isInitialized = true;
 }
 
-function getConfig() {
+/**
+ * Search yanlog file and construct configInfo
+ */
+function getConfigInfo() {
     var filesConfig = glob.sync("**/yanlog.js");
     filesConfig.sort(function(a, b) {
         return a.length - b.length;
     });
 
     if (filesConfig && filesConfig[0]) {
-        configFilePath = filesConfig[0];
-        config = require(process.cwd() + '/' + configFilePath);
+        return {
+            path: filesConfig[0],
+            mtime: fs.statSync(process.cwd() + '/' + filesConfig[0]).mtime
+        };
+    } else {
+        return null;
     }
 }
 
+/**
+ * Configure yanlog
+ */
+function configure() {
+    var config = getConfig();
+    load(config);
+}
+
+/**
+ * Get configuration
+ */
+function getConfig() {
+    if (configInfo) {
+        var module = process.cwd() + '/' + configInfo.path;
+        //by pass cache
+        if (require.cache[require.resolve(module)]) {
+            delete require.cache[require.resolve(module)]
+        }
+        return require(module);
+    } else {
+        return defaultConfig;
+    }
+}
+
+/**
+ * load yanlog
+ */
 function load(config) {
     //reset
     cache = {};
     activeLogger = [];
     rootLogger = null;
-    appenderList = {};
+    var appenderList = {};
 
     var appenderConfigs = getArray(config.configuration.appender);
 
@@ -89,7 +133,7 @@ function load(config) {
     loggersConfig.forEach(function(loggerConfig) {
         var namespace = loggerConfig.name.replace(/\*/g, '.*?');
         var test = new RegExp('^' + namespace + '$');
-        var logger = buildLogger(loggerConfig);
+        var logger = buildLogger(appenderList, loggerConfig);
 
         activeLogger.push({
             "tester": test,
@@ -98,13 +142,16 @@ function load(config) {
     });
 
     if (config.configuration.root) {
-        rootLogger = buildLogger(config.configuration.root);
+        rootLogger = buildLogger(appenderList, config.configuration.root);
     } else {
         rootLogger = getDefaultRootLogger();
     }
 }
 
-function buildLogger(loggerConfig) {
+/**
+ * Build logger
+ */
+function buildLogger(appenderList, loggerConfig) {
     var appenders = appenderList[loggerConfig["appender-ref"]];
     var logger = new winston.Logger();
     if (appenders && Array.isArray(appenders)) {
@@ -118,6 +165,9 @@ function buildLogger(loggerConfig) {
     return logger;
 }
 
+/**
+ * return default logger
+ */
 function getDefaultRootLogger() {
     return logger = new(winston.Logger)({
         transports: [
@@ -130,24 +180,60 @@ function getDefaultRootLogger() {
     });
 }
 
+/**
+ * get an array
+ */
 function getArray(value) {
     return Array.isArray(value) ? value : [value];
 }
 
 
 /**
- * return the good logger
+ * Get the good logger
+ */
+function getLogger(namespace) {
+    for (var i = 0, len = activeLogger.length; i < len; i++) {
+        if (activeLogger[i].tester.test(namespace)) {
+            return activeLogger[i].logger;
+        }
+    }
+
+    return rootLogger;
+}
+
+/**
+ * Construct wrapper of winston
+ */
+function constructWrapper(logger) {
+    var wrap = {};
+    Object.keys(logger.levels).forEach(function(level) {
+        wrap[level] = function() {
+            //get logger dynamically
+            var log = getLogger();
+            log[level].apply(log, Array.prototype.slice.call(arguments));
+        };
+    });
+
+    return wrap;
+}
+
+/**
+ * return the good wrapper of winstons
  */
 function yanlog(namespace) {
+    if (!isInitialized) {
+        initialize();
+    }
     if (cache[namespace]) {
         return cache[namespace];
     }
 
     for (var i = 0, len = activeLogger.length; i < len; i++) {
         if (activeLogger[i].tester.test(namespace)) {
-            return cache[namespace] = activeLogger[i].logger;
+            var logger = activeLogger[i].logger;
+            return cache[namespace] = constructWrapper(logger);
         }
     }
 
-    return cache[namespace] = rootLogger;
+    return cache[namespace] = constructWrapper(rootLogger);
 }

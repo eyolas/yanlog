@@ -3,7 +3,7 @@
 yanlog
 ======
 
-Wrapper of winston for easy configuration.
+Wrapper of [winston](https://github.com/flatiron/winston) for easy configuration.
 Inspired by [debug](https://github.com/visionmedia/debug) and [logback](http://logback.qos.ch/)
 
 
@@ -15,9 +15,11 @@ $ npm install yanlog
 
 ## Usage
 
- With `yanlog` you simply invoke the exported function to generate your logger function, passing it a name which will determine if a noop function is returned.
+ With `yanlog` you simply invoke the exported function to generate your logger function, passing it a name which will determine the winston wrapper that is returned.
 
- On first invoke, yanlog is going to load the first yanlog.js in app path. 
+ On first invoke, yanlog is going to load the first yanlog.js in app path.
+
+ if yanlog's config file is find, every 30s yanlog is watching if the file change and reconfigure yanlog
 
 Example _app.js_:
 
@@ -128,6 +130,11 @@ function getDefaultRootLogger() {
 - add compatibility with yaml and .properties
 - config file testing in order to generate error logs
 - watch config file for real time reload configuration
+
+## Change log
+### 1.0.0 initial version
+### 1.1.0
+* every 30s, yanlog is checking if config file is changed. Reload wrapper if the config is changed
 
 ## Authors
 
