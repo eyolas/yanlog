@@ -47,7 +47,6 @@ function initialize() {
         setInterval(function() {
             var stats = fs.statSync(process.cwd() + '/' + configInfo.path);
             if (configInfo.mtime.getTime() != stats.mtime.getTime()) {
-                console.log("reconfiguration")
                 configInfo.mtime = stats.mtime;
                 configure();
             }
@@ -104,10 +103,10 @@ function getConfig() {
  */
 function load(config) {
     //reset
-    cache = {};
-    activeLogger = [];
-    rootLogger = null;
-    var appenderList = {};
+    var appenderList = {},
+        newActiveLogger = [],
+        newRootLogger = null;
+
 
     var appenderConfigs = getArray(config.configuration.appender);
 
@@ -135,17 +134,21 @@ function load(config) {
         var test = new RegExp('^' + namespace + '$');
         var logger = buildLogger(appenderList, loggerConfig);
 
-        activeLogger.push({
+        newActiveLogger.push({
             "tester": test,
             "logger": logger
         });
     });
 
     if (config.configuration.root) {
-        rootLogger = buildLogger(appenderList, config.configuration.root);
+        newRootLogger = buildLogger(appenderList, config.configuration.root);
     } else {
-        rootLogger = getDefaultRootLogger();
+        newRootLogger = getDefaultRootLogger();
     }
+
+    cache = {};
+    activeLogger = newActiveLogger;
+    rootLogger = newRootLogger;
 }
 
 /**
