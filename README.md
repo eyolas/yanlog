@@ -1,8 +1,10 @@
+[![NPM version][npm-image]][npm-url]
+
 yanlog
 ======
 
-Wrapper of winston for easy configuration
-Inspired by [debug](https://github.com/visionmedia/debug)
+Wrapper of winston for easy configuration.
+Inspired by [debug](https://github.com/visionmedia/debug) and [logback](http://logback.qos.ch/)
 
 
 ## Installation
@@ -15,7 +17,7 @@ $ npm install yanlog
 
  With `yanlog` you simply invoke the exported function to generate your logger function, passing it a name which will determine if a noop function is returned.
 
- On first invoke, yanlog going to load the first yanlog.js in app path. 
+ On first invoke, yanlog is going to load the first yanlog.js in app path. 
 
 Example _app.js_:
 
@@ -50,7 +52,7 @@ setInterval(function(){
 }, 1000);
 ```
 
-Example _yoanlog.js_:
+Example _yanlog.js_:
 
 ```js
 module.exports = {
@@ -80,28 +82,31 @@ module.exports = {
 
 ## yanlog.js structure
 ### appender (array or object) - Required
-Appender defined all winston logger of you application.
+Appender defined all winston logger of your application.
 
 ##### appender object:
-* `name`: name of appender - Required
-* `transports`: list of transports (or object) of appender - require
- - `module`: name of module (yanlog test if module exist in winston.transport else require) - Required
- - `options`: options of module - Optional
+* `name`: name of appender - **Required**
+* `transports`: list of transports (or object) of appender - **Required**
+ - `module`: name of module. yanlog tests 
+ if module exists in winston.transport else it will be imported. 
+ [list of available transport](https://github.com/flatiron/winston#working-with-transports) - **Required**
+ - `options`: options of module - **Optional**
+
 
 ### logger (array or object)
-Logger defined all logger active
+Logger defined all active loggers
 
 ##### logger object:
-* `name`: namespace. The * character may be used as a wildcard. Suppose for example your library has debuggers named "connect:bodyParser", "connect:compress", "connect:session", instead of listing all three with different logger, you may simply do `connect:*` - Required
-* `level`: level of logger - Optionnal (Default: info)
-* `appender-ref`: reference of appender - Required
+* `name`: namespace. The * character may be used as a wildcard. Suppose for example your library has debuggers named "connect:bodyParser", "connect:compress", "connect:session", instead of listing all three with different logger, you may simply do `connect:*` - **Required**
+* `level`: level of logger - **Optionnal** (Default: info)
+* `appender-ref`: reference to appender - **Required**
 
 ### root - Optional
-Default logger if namespace no matching with logger
+Default logger if no logger matches the current namespace
 
 ##### root object:
-* `level` : level of logger - Optionnal (Default: info)
-* `appender-ref`: reference of appender - Required
+* `level` : level of logger - **Optionnal** (Default: info)
+* `appender-ref`: reference to appender - **Required**
 
 ##### default root
 
@@ -117,12 +122,12 @@ function getDefaultRootLogger() {
         ]
     });
 }
-``
+```
 
 ## roadmap
 - add compatibility with yaml and .properties
-- test of file config for outpout error
-- watch config file for reload
+- config file testing in order to generate error logs
+- watch config file for real time reload configuration
 
 ## Authors
 
@@ -132,3 +137,5 @@ function getDefaultRootLogger() {
 
 The [MIT](LICENCE) License
 
+[npm-image]: https://img.shields.io/npm/v/yanlog.svg?style=flat
+[npm-url]: https://github.com/eyolas/yanlog
