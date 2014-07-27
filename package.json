@@ -1,6 +1,6 @@
 {
   "name": "yanlog",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Wrapper of winston for easy configuration",
   "main": "index.js",
   "repository": {
