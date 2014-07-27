@@ -36,17 +36,23 @@ var rootLogger = null;
 /*****************************************
  * initialize
  *****************************************/
-var filesConfig = glob.sync("**/yanlog.js"),
-    configFilePath = null,
+var configFilePath = null,
     config = defaultConfig;
 
-if (filesConfig && filesConfig[0]) {
-    configFilePath = filesConfig[0];
-    config = require(process.cwd() + '/' + configFilePath);
-}
-
+getConfig();
 load(config);
 
+function getConfig() {
+    var filesConfig = glob.sync("**/yanlog.js");
+    filesConfig.sort(function(a, b) {
+        return a.length - b.length;
+    });
+
+    if (filesConfig && filesConfig[0]) {
+        configFilePath = filesConfig[0];
+        config = require(process.cwd() + '/' + configFilePath);
+    }
+}
 
 function load(config) {
     //reset
