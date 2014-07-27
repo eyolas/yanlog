@@ -39,8 +39,12 @@ var rootLogger = null;
 var configFilePath = null,
     config = defaultConfig;
 
-getConfig();
-load(config);
+configure();
+
+function configure() {
+    getConfig();
+    load(config);
+}
 
 function getConfig() {
     var filesConfig = glob.sync("**/yanlog.js");
@@ -65,19 +69,19 @@ function load(config) {
 
     appenderConfigs.forEach(function(appenderConfig) {
         var name = appenderConfig.name;
-        var logger = [];
+        var appenders = [];
         var transportConfigs = getArray(appenderConfig.transports);
 
 
         transportConfigs.forEach(function(transportConfig) {
             var module = winston.transports[transportConfig.module] || require(module);
-            logger.push({
+            appenders.push({
                 "module": module,
                 "options": transportConfig.options || {}
             });
         });
 
-        appenderList[name] = logger;
+        appenderList[name] = appenders;
     });
 
     var loggersConfig = getArray(config.configuration.logger);
@@ -85,11 +89,11 @@ function load(config) {
     loggersConfig.forEach(function(loggerConfig) {
         var namespace = loggerConfig.name.replace(/\*/g, '.*?');
         var test = new RegExp('^' + namespace + '$');
-        var log = buildLogger(loggerConfig);
+        var logger = buildLogger(loggerConfig);
 
         activeLogger.push({
             "tester": test,
-            "log": log
+            "logger": logger
         });
     });
 
@@ -102,16 +106,16 @@ function load(config) {
 
 function buildLogger(loggerConfig) {
     var appenders = appenderList[loggerConfig["appender-ref"]];
-    var log = new winston.Logger();
+    var logger = new winston.Logger();
     if (appenders && Array.isArray(appenders)) {
         appenders.forEach(function(appender) {
             var options = appender.options;
             options.level = loggerConfig.level || "info";
-            log.add(appender.module, options);
+            logger.add(appender.module, options);
         });
     }
 
-    return log;
+    return logger;
 }
 
 function getDefaultRootLogger() {
@@ -141,7 +145,7 @@ function yanlog(namespace) {
 
     for (var i = 0, len = activeLogger.length; i < len; i++) {
         if (activeLogger[i].tester.test(namespace)) {
-            return cache[namespace] = activeLogger[i].log;
+            return cache[namespace] = activeLogger[i].logger;
         }
     }
 
