@@ -92,6 +92,7 @@ Appender defined all winston logger of your application.
  - `module`: name of module. yanlog tests 
  if module exists in winston.transport else it will be imported. 
  [list of available transport](https://github.com/flatiron/winston#working-with-transports) - **Required**
+ - `submodule`: submodule (example: "MongoDB" for [mongodb-transport](https://github.com/flatiron/winston#mongodb-transport)) - **Optional**
  - `options`: options of module - **Optional**
 
 
@@ -131,9 +132,7 @@ function getDefaultRootLogger() {
 - config file testing in order to generate error logs
 
 ## Change log
-### 1.0.0 initial version
-### 1.1.0
-* every 30s, yanlog is checking if config file is changed. Reload wrapper if the config is changed
+[here](CHANGELOG.md)
 
 ## Authors
 

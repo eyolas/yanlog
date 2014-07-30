@@ -118,6 +118,9 @@ function load(config) {
 
         transportConfigs.forEach(function(transportConfig) {
             var module = winston.transports[transportConfig.module] || require(module);
+            if (transportConfig.submodule) {
+                module = module[transportConfig.submodule];
+            }
             appenders.push({
                 "module": module,
                 "options": transportConfig.options || {}
