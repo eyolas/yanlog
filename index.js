@@ -7,27 +7,6 @@ var winston = require('winston'),
 
 exports = module.exports = yanlog;
 
-/**
- * Default configuration
- */
-var defaultConfig = {
-    "configuration": {
-        "appender": {
-            "name": "console",
-            "transports": [{
-                "module": "Console",
-                "options": {
-                    "color": true,
-                    "timestamp": true
-                }
-            }]
-        },
-        "root": {
-            "level": "info",
-            "appender-ref": "console"
-        }
-    }
-};
 var cache = {};
 var activeLogger = [];
 var rootLogger = null;
@@ -94,7 +73,7 @@ function getConfig() {
         }
         return require(module);
     } else {
-        return defaultConfig;
+        return null;
     }
 }
 
@@ -105,48 +84,50 @@ function load(config) {
     //reset
     var appenderList = {},
         newActiveLogger = [],
-        newRootLogger = null;
-
-
-    var appenderConfigs = getArray(config.configuration.appender);
-
-    appenderConfigs.forEach(function(appenderConfig) {
-        var name = appenderConfig.name;
-        var appenders = [];
-        var transportConfigs = getArray(appenderConfig.transports);
-
-
-        transportConfigs.forEach(function(transportConfig) {
-            var module = winston.transports[transportConfig.module] || require(module);
-            if (transportConfig.submodule) {
-                module = module[transportConfig.submodule];
-            }
-            appenders.push({
-                "module": module,
-                "options": transportConfig.options || {}
-            });
-        });
-
-        appenderList[name] = appenders;
-    });
-
-    var loggersConfig = getArray(config.configuration.logger);
-
-    loggersConfig.forEach(function(loggerConfig) {
-        var namespace = loggerConfig.name.replace(/\*/g, '.*?');
-        var test = new RegExp('^' + namespace + '$');
-        var logger = buildLogger(appenderList, loggerConfig);
-
-        newActiveLogger.push({
-            "tester": test,
-            "logger": logger
-        });
-    });
-
-    if (config.configuration.root) {
-        newRootLogger = buildLogger(appenderList, config.configuration.root);
-    } else {
         newRootLogger = getDefaultRootLogger();
+
+
+    if (config && config.configuration) {
+        var appenderConfigs = getArray(config.configuration.appender);
+
+        appenderConfigs.forEach(function(appenderConfig) {
+            var name = appenderConfig.name;
+            var appenders = [];
+            var transportConfigs = getArray(appenderConfig.transports);
+
+
+            transportConfigs.forEach(function(transportConfig) {
+                var module = winston.transports[transportConfig.module] || require(module);
+                if (transportConfig.submodule) {
+                    module = module[transportConfig.submodule];
+                }
+                appenders.push({
+                    "module": module,
+                    "options": transportConfig.options || {}
+                });
+            });
+
+            appenderList[name] = appenders;
+        });
+
+        if (config.configuration.logger) {
+            var loggersConfig = getArray(config.configuration.logger);
+
+            loggersConfig.forEach(function(loggerConfig) {
+                var namespace = loggerConfig.name.replace(/\*/g, '.*?');
+                var test = new RegExp('^' + namespace + '$');
+                var logger = buildLogger(appenderList, loggerConfig);
+
+                newActiveLogger.push({
+                    "tester": test,
+                    "logger": logger
+                });
+            });
+        }
+
+        if (config.configuration.root) {
+            newRootLogger = buildLogger(appenderList, config.configuration.root);
+        }
     }
 
     cache = {};
@@ -180,7 +161,7 @@ function getDefaultRootLogger() {
             new(winston.transports.Console)({
                 level: 'info',
                 timestamp: true,
-                color: true
+                colorize: true
             }),
         ]
     });
@@ -198,9 +179,11 @@ function getArray(value) {
  * Get the good logger
  */
 function getLogger(namespace) {
-    for (var i = 0, len = activeLogger.length; i < len; i++) {
-        if (activeLogger[i].tester.test(namespace)) {
-            return activeLogger[i].logger;
+    if (activeLogger && Array.isArray(activeLogger) && activeLogger.length) {
+        for (var i = 0, len = activeLogger.length; i < len; i++) {
+            if (activeLogger[i].tester.test(namespace)) {
+                return activeLogger[i].logger;
+            }
         }
     }
 
@@ -234,10 +217,12 @@ function yanlog(namespace) {
         return cache[namespace];
     }
 
-    for (var i = 0, len = activeLogger.length; i < len; i++) {
-        if (activeLogger[i].tester.test(namespace)) {
-            var logger = activeLogger[i].logger;
-            return cache[namespace] = constructWrapper(logger);
+    if (activeLogger && Array.isArray(activeLogger) && activeLogger.length) {
+        for (var i = 0, len = activeLogger.length; i < len; i++) {
+            if (activeLogger[i].tester.test(namespace)) {
+                var logger = activeLogger[i].logger;
+                return cache[namespace] = constructWrapper(logger);
+            }
         }
     }
 

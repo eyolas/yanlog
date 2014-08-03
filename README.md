@@ -120,7 +120,7 @@ function getDefaultRootLogger() {
             new(winston.transports.Console)({
                 level: 'info',
                 timestamp: true,
-                color: true
+                colorize: true
             }),
         ]
     });

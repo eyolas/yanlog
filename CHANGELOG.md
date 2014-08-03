@@ -5,3 +5,6 @@
 
 ### 1.1.1
 * add submodule on appender object
+
+### 1.1.2
+* correction when there is no yanlog file
