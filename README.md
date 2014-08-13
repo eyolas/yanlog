@@ -59,6 +59,9 @@ Example _yanlog.js_:
 
 ```js
 module.exports = {
+    "options": {
+        "enableWatch": true
+    },
     "configuration": {
         "appender": {
             "name": "console",
@@ -83,7 +86,11 @@ module.exports = {
 }
 ```
 
-## yanlog.js structure
+# yanlog.js structure
+## Options - Optional
+* `enableWatch` : enable watching file - default: true
+
+## Configuration
 ### appender (array or object) - Required
 Appender defined all winston logger of your application.
 

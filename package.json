@@ -20,6 +20,7 @@
   "homepage": "https://github.com/eyolas/yanlog",
   "dependencies": {
     "glob": "^4.0.4",
+    "lodash": "^2.4.1",
     "winston": "^0.7.3"
   }
 }

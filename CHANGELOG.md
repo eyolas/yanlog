@@ -8,3 +8,6 @@
 
 ### 1.1.2
 * correction when there is no yanlog file
+
+### 1.1.3
+* add option for disable the watcher

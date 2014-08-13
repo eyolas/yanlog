@@ -3,6 +3,7 @@
  */
 var winston = require('winston'),
     fs = require('fs'),
+    _ = require('lodash'),
     glob = require('glob');
 
 exports = module.exports = yanlog;
@@ -11,18 +12,28 @@ var cache = {};
 var activeLogger = [];
 var rootLogger = null;
 
+/**
+ * Default options
+ */
+var defaultOptions = {
+    enableWatch: true
+};
+
 /*****************************************
  * initialize
  *****************************************/
 var configInfo = null,
     isInitialized = false;
 
+
 function initialize() {
     configInfo = getConfigInfo();
-    configure();
+
+    var config = getConfig();
+    configure(config);
 
     // watch file for reload configuration
-    if (configInfo) {
+    if (configInfo && config.options.enableWatch) {
         setInterval(function() {
             var stats = fs.statSync(process.cwd() + '/' + configInfo.path);
             if (configInfo.mtime.getTime() != stats.mtime.getTime()) {
@@ -56,8 +67,11 @@ function getConfigInfo() {
 /**
  * Configure yanlog
  */
-function configure() {
-    var config = getConfig();
+function configure(config) {
+    if (null == config) {
+        config = getConfig();
+    }
+
     load(config);
 }
 
@@ -71,9 +85,19 @@ function getConfig() {
         if (require.cache[require.resolve(module)]) {
             delete require.cache[require.resolve(module)]
         }
-        return require(module);
+        
+        var config = require(module);
+        if (config.options) {
+            config.options = _.defaults(config.options, defaultOptions);
+        } else {
+            config.options = defaultOptions;
+        }
+
+        return config;
     } else {
-        return null;
+        return {
+            "options": defaultOptions
+        };
     }
 }
 

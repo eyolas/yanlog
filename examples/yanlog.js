@@ -1,4 +1,7 @@
 module.exports = {
+    "options": {
+        "enableWatch": false
+    },
     "configuration": {
         "appender": {
             "name": "console",
