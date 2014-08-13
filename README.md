@@ -150,7 +150,7 @@ function getDefaultRootLogger() {
 
 The [MIT](LICENCE) License
 
-[npm-image]: https://img.shields.io/npm/v/yanlog.svg??style=flat-square
+[npm-image]: https://img.shields.io/npm/v/yanlog.svg?style=flat-square
 [npm-url]: https://github.com/eyolas/yanlog
 [gemnasium-image]: http://img.shields.io/gemnasium/eyolas/yanlog.svg?style=flat-square
 [gemnasium-url]: https://gemnasium.com/eyolas/yanlog
