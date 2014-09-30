@@ -217,12 +217,12 @@ function getLogger(namespace) {
 /**
  * Construct wrapper of winston
  */
-function constructWrapper(logger) {
+function constructWrapper(logger, namespace) {
     var wrap = {};
     Object.keys(logger.levels).forEach(function(level) {
         wrap[level] = function() {
             //get logger dynamically
-            var log = getLogger();
+            var log = getLogger(namespace);
             log[level].apply(log, Array.prototype.slice.call(arguments));
         };
     });
@@ -237,6 +237,7 @@ function yanlog(namespace) {
     if (!isInitialized) {
         initialize();
     }
+
     if (cache[namespace]) {
         return cache[namespace];
     }
@@ -245,7 +246,7 @@ function yanlog(namespace) {
         for (var i = 0, len = activeLogger.length; i < len; i++) {
             if (activeLogger[i].tester.test(namespace)) {
                 var logger = activeLogger[i].logger;
-                return cache[namespace] = constructWrapper(logger);
+                return cache[namespace] = constructWrapper(logger, namespace);
             }
         }
     }

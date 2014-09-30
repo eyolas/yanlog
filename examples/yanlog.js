@@ -23,7 +23,7 @@ module.exports = {
             "appender-ref": "console"
         }, ],
         "root": {
-            "level": "info",
+            "level": "error",
             "appender-ref": "console"
         }
     }
